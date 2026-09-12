@@ -2,7 +2,7 @@
 
 ## Thông tin bài làm
 
-- **Học viên:** Lê Thị Thùy Trang
+- **Học viên:** Lê Thị Thùy Trang - 2A202602678
 - **Branch cá nhân:** `lethithuytrang-02678`
 - **Vai trò giả định:** AI Product Engineer, Vin Smart Future
 - **Phạm vi:** Phase 1 — SCAN và Phase 2 — QUICK-ASSESS

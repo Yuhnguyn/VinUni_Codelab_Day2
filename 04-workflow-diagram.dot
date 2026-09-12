@@ -6,7 +6,7 @@ digraph CurrentState {
     nodesep="0.35",
     ranksep="0.65",
     fontname="Arial",
-    label="VINPEARL — CURRENT-STATE CUSTOMER JOURNEY PLANNING\nWorking baseline: 25 minutes/guest (hypothesis to validate)\nIndividual work: Le Thi Thuy Trang (02678)",
+    label="VINPEARL — CURRENT-STATE CUSTOMER JOURNEY PLANNING\nWorking baseline: 25 minutes/guest (hypothesis to validate)\nIndividual work: Le Thi Thuy Trang (2A202602678)",
     labelloc=t,
     fontsize=22,
     fontcolor="#123B5D"

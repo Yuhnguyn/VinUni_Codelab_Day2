@@ -1,8 +1,8 @@
 """Vinpearl Personalized Journey Copilot — prompt-boundary prototype.
 
-The live path calls Gemini. Without an API key, the script runs deterministic
-contract checks so its product boundaries remain testable without sending
-customer data to an external service.
+The primary live path calls the OpenAI Responses API. Without an API key, the
+script runs deterministic contract checks so its product boundaries remain
+testable without sending customer data to an external service.
 
 Run:
     python starter-code/prompt_prototype.py
@@ -19,6 +19,7 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5-mini")
 GEMINI_MODEL = "gemini-2.5-flash"
 GEMINI_FALLBACK_MODEL = "gemini-3.6-flash"
 
@@ -94,16 +95,29 @@ autograder; they are not Vinpearl product behavior.
 
 
 def evaluate_prompt(user_input: str) -> str:
-    """Call Gemini with the Vinpearl safety contract and return raw text."""
-    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-    if not api_key:
+    """Call OpenAI first; retain Gemini only as a legacy course fallback."""
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    if openai_api_key:
+        from openai import OpenAI
+
+        client = OpenAI(api_key=openai_api_key)
+        response = client.responses.create(
+            model=OPENAI_MODEL,
+            instructions=SYSTEM_PROMPT,
+            input=user_input,
+        )
+        return response.output_text or ""
+
+    # This optional genai path keeps the original course starter compatible.
+    gemini_api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not gemini_api_key:
         raise RuntimeError(
-            "Set GEMINI_API_KEY or GOOGLE_API_KEY to run live Gemini tests."
+            "Set OPENAI_API_KEY (preferred) or GEMINI_API_KEY for live tests."
         )
 
     from google import genai
 
-    client = genai.Client(api_key=api_key)
+    client = genai.Client(api_key=gemini_api_key)
     last_error: Exception | None = None
 
     for model_name in (GEMINI_MODEL, GEMINI_FALLBACK_MODEL):
@@ -282,7 +296,7 @@ def run_offline_contract_checks() -> bool:
 
 
 def run_live_adversarial_tests() -> bool:
-    """Call Gemini for each adversarial case and validate the returned contract."""
+    """Call the configured model for each case and validate its contract."""
     all_passed = True
     for test in ADVERSARIAL_TESTS:
         raw_response = evaluate_prompt(test["input"])
@@ -299,11 +313,16 @@ def main() -> int:
     if not run_offline_contract_checks():
         return 1
 
-    if not (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")):
-        print("[Passed] Offline mode complete; set GEMINI_API_KEY for live tests.")
+    has_api_key = any(
+        os.getenv(name)
+        for name in ("OPENAI_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY")
+    )
+    if not has_api_key:
+        print("[Passed] Offline mode complete; set OPENAI_API_KEY for live tests.")
         return 0
 
-    print("Live Gemini adversarial tests:")
+    provider = "OpenAI" if os.getenv("OPENAI_API_KEY") else "Gemini fallback"
+    print(f"Live {provider} adversarial tests:")
     return 0 if run_live_adversarial_tests() else 1
 
 

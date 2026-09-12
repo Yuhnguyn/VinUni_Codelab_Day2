@@ -3,7 +3,7 @@
 ## Thông tin
 
 - **Học viên:** Lê Thị Thùy Trang
-- **Mã định danh trên branch:** 02678
+- **Mã học viên:** 2A202602678
 - **Branch cá nhân:** `lethithuytrang-02678`
 - **Đề tài cá nhân / Prompt Prototype:** Vinpearl Personalized Journey Copilot
 - **Đề tài nhóm sau thảo luận:** Vinhomes Resident Request Copilot
@@ -70,9 +70,9 @@ Phiên bản đầu coi replanning và multi-generational planning là hai bài 
 
 Khi nhóm quyết định chọn Vinhomes, AI từng sửa cả AI Log và prototype cá nhân sang Vinhomes. Điều này không đúng với quyết định của tôi. Tôi đã sửa lại: `01-problem-scan.md`, `03-ai-log.md` và `starter-code/prompt_prototype.py` thể hiện đề tài cá nhân Vinpearl; Vinhomes chỉ là đề tài nhóm cho Deep-Dive và Workflow.
 
-### 4.6. Giới hạn của kiểm thử API
+### 4.6. Giới hạn của kiểm thử API và thay đổi provider
 
-Tôi đã thử đường gọi Gemini thực tế. Model `gemini-2.5-flash` báo không khả dụng đối với tài khoản/API đang dùng; fallback cũng trả về `403 PERMISSION_DENIED`. Vì vậy tôi không ghi nhận “live test passed”. Prototype vẫn có deterministic contract checks chạy offline và đã vượt autograder; live test cần được chạy lại khi có project/API key đủ quyền.
+Đường gọi Gemini từng không hoàn tất vì project/API trả về `403 PERMISSION_DENIED`, nên tôi không ghi nhận kết quả đó là pass. Sau khi chuyển đường chạy chính sang OpenAI Responses API, tôi nạp `OPENAI_API_KEY` qua biến môi trường và chạy lại bộ kiểm thử: **4/4 adversarial tests trên `gpt-5-mini` pass**. Key không xuất hiện trong source hoặc commit. Prototype vẫn giữ deterministic contract checks để có thể kiểm tra offline mà không gọi API.
 
 ## 5. Prompt prototype đã được sửa như thế nào?
 
