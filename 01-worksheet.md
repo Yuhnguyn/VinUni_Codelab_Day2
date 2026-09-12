@@ -155,17 +155,24 @@ Chọn **top 3 bài toán** từ danh sách trên và hoàn thiện **3 Quick Pr
 # 🏁 Phase 5 — EVALUATE (Nhóm, 20 min)
 
 ### AI Readiness Checklist:
-1. [ ] Chúng tôi có sẵn dữ liệu mẫu/logs sạch để test?
-2. [ ] Rủi ro khi AI sai có nằm trong tầm kiểm soát (qua HITL hoặc Fallback)?
+1. [x] Chúng tôi có sẵn dữ liệu mẫu/logs sạch để test?
+   - Đã có 3 nguồn quy định tự soạn, gắn nhãn **MÔ PHỎNG**, có metadata tòa/phạm vi/hiệu lực; có 4 adversarial test cases. Dữ liệu này đủ cho prototype hẹp, chưa đại diện dữ liệu vận hành thật.
+2. [x] Rủi ro khi AI sai có nằm trong tầm kiểm soát (qua HITL hoặc Fallback)?
+   - Phiếu thường chỉ là `ticket_draft` và bắt buộc cư dân xác nhận. Câu hỏi thiếu nguồn phải `escalate`; ca P0 chuyển luồng khẩn; AI không có quyền tự tạo mã phiếu hoặc báo đã gửi/đã xử lý. JSON schema và validator tự động kiểm tra các ranh giới này.
 3. [ ] Stakeholders sẵn sàng thay đổi quy trình làm việc cũ?
+   - Chưa có bằng chứng BQL/CSKH đã duyệt nguồn, nhóm phân loại, routing hoặc nhận trách nhiệm pilot. Prototype chưa thay đổi quy trình thật nên điểm này chưa chặn việc tiếp tục thử nghiệm kỹ thuật.
 
 ### Quyết định cuối cùng của Ban Giám Đốc Vin Smart Future:
-[ ] **GO (Bắt đầu xây dựng Prototype):** Bắt đầu phát triển với scope hẹp.
+[x] **GO (Bắt đầu xây dựng Prototype):** Bắt đầu phát triển với scope hẹp.
 [ ] **NOT YET (Cần tích lũy thêm dữ liệu/xác lập baseline):** Trì hoãn để chuẩn bị thêm.
 [ ] **NO-GO (Không khả thi / Rule-based tốt hơn):** Hủy bỏ dự án AI này.
 
 **Justification (Lý giải quyết định dựa trên bằng chứng kỹ thuật và chi phí):**
-> *Viết lý giải chi tiết tại đây*
+> Nhóm chọn **GO cho prototype scope hẹp** vì đã có một bản mẫu Python chạy được với Gemini 2.5 Flash, system prompt quy định rõ vai trò và ranh giới, structured JSON output và 4 adversarial inputs. Các kiểm tra tĩnh xác nhận prompt, schema và test hợp lệ; 5/5 kiểm tra code của autograder đã PASS. Thiết kế giới hạn hậu quả khi AI sai: trả lời quy định phải có citation; thiếu căn cứ thì chuyển BQL; phiếu thường cần cư dân xác nhận; P0 được escalation; kết quả AI tách khỏi trạng thái thực thi nên mô hình không thể tự xác nhận đã lưu, chuyển hoặc xử lý phiếu.
+>
+> Chi phí prototype thấp và kiểm soát được vì toàn bộ bài thử nằm trong một file Python, dùng 3 nguồn văn bản ngắn, không cần database, web UI, vector database hoặc tích hợp hệ thống thật. Mỗi test chỉ cần một lượt gọi Gemini Flash. Chưa có số chi phí API thực đo vì môi trường hiện chưa cấu hình API key; khi chạy live, nhóm sẽ ghi input/output token, latency và số lần retry cho cả 4 test trước khi mở rộng dữ liệu.
+>
+> Quyết định này **không phải GO cho pilot vận hành**. Trước pilot cần chạy live stress-test với Gemini, thay nguồn mô phỏng bằng tài liệu được BQL duyệt, đo baseline và chi phí thực, kiểm thử thêm các ca sai tòa/hết hiệu lực/mâu thuẫn, đồng thời có BQL/CSKH xác nhận quy trình HITL và routing. Nếu các ranh giới không đạt hoặc RAG không tốt hơn tìm kiếm thường, nhóm sẽ quay lại trạng thái NOT YET hoặc thay phần AI tương ứng bằng rule-based.
 
 ---
 

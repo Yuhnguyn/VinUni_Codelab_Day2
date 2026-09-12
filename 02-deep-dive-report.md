@@ -9,8 +9,8 @@
 | Định hướng sản phẩm | Một cuộc hội thoại, hai luồng: hỏi đáp RAG và tiếp nhận phản ánh |
 | Người dùng chính | Cư dân; BQL/CSKH và bộ phận xử lý là bên nhận |
 | Phạm vi demo | Một khu/tòa giả lập, tài liệu mẫu, tài khoản và hệ thống phiếu demo |
-| Trạng thái | Đã xác định hướng để soạn báo cáo theo draft; chưa code, chưa có phê duyệt vận hành thật |
-| Readiness đề xuất | NOT YET — cần chuẩn bị kho tài liệu, cấu hình và bộ kiểm thử |
+| Trạng thái | Đã có prompt prototype một file, structured output và 4 adversarial tests; chưa có phê duyệt vận hành thật |
+| Readiness đề xuất | GO prototype scope hẹp; chưa GO pilot vận hành |
 
 ## 1. Bài toán, insight và mức bằng chứng
 
@@ -275,23 +275,23 @@ Mẫu so sánh đề xuất: 20 câu đủ nguồn và 20 phiếu thường, m�
 | T9 | Cư dân đổi vị trí sau màn tóm tắt | Vô hiệu xác nhận cũ, yêu cầu xác nhận bản mới |
 | T10 | Hỏi quy định giữa lúc soạn phiếu rồi nói “gửi phản ánh đó” | Giữ nháp và ngữ cảnh; xác nhận đúng phiếu, không lẫn câu trả lời RAG |
 
-Các dòng trên là thiết kế, chưa phải log PASS. Worksheet yêu cầu ít nhất 3 adversarial inputs và prototype Python/Gemini theo lab; code sẽ thực hiện sau review. Model/API khả dụng cần kiểm lại lúc triển khai.
+Prototype đã triển khai 4 adversarial inputs T1–T4 trong `starter-code/prompt_prototype.py`, có validator cho mode, citation, P0, xác nhận và trạng thái thực thi. Kiểm tra tĩnh và 5/5 code checks của autograder đã PASS. Chưa có log live từ Gemini vì môi trường chạy chưa cấu hình API key; T5–T10 vẫn là backlog nếu mở rộng sau MVP 30 phút.
 
 ## 9. Phase 5 — AI Readiness & quyết định
 
 | Checklist worksheet | Hiện trạng | Bằng chứng còn thiếu |
 |---|---|---|
-| [ ] Có dữ liệu mẫu/log sạch | Có draft và ví dụ, chưa có kho RAG/dataset hoàn chỉnh | Tài liệu mẫu + metadata; bộ 20+100 ca gán nhãn |
-| [ ] Rủi ro nằm trong kiểm soát | Đã đặc tả rule/HITL/fallback, chưa chạy kiểm chứng | Test RAG, P0, quyền, lưu/chuyển/chống lặp |
-| [ ] Stakeholder sẵn sàng đổi quy trình | Người dùng đã cung cấp hướng sản phẩm, chưa có BQL xác nhận | Chủ sở hữu tài liệu/cấu hình, người trực và người phụ trách pilot |
+| [x] Có dữ liệu mẫu/log sạch | Có 3 nguồn RAG tự soạn, gắn nhãn MÔ PHỎNG, và 4 adversarial cases; đủ cho prototype hẹp | Cần tài liệu thật được duyệt và dataset lớn hơn trước pilot |
+| [x] Rủi ro nằm trong kiểm soát | Có HITL cho phiếu thường, fallback/escalate khi thiếu nguồn, P0 escalation, JSON schema và validator; autograder code pass 5/5 | Cần chạy live Gemini và test tích hợp trước pilot |
+| [ ] Stakeholder sẵn sàng đổi quy trình | Chưa thay đổi quy trình thật; chưa có BQL/CSKH xác nhận | Chủ sở hữu tài liệu, routing, người trực và người phụ trách pilot |
 
-- [ ] **GO** — chưa đủ điều kiện bắt đầu prototype có dữ liệu thử theo thiết kế.
-- [x] **NOT YET** — hoàn thiện dữ liệu/cấu hình và chốt scope review trước code.
+- [x] **GO** — tiếp tục prototype scope hẹp trong môi trường mô phỏng.
+- [ ] **NOT YET** — áp dụng cho pilot nếu chưa có live test, dữ liệu duyệt và stakeholder.
 - [ ] **NO-GO** — chưa có bằng chứng để loại bỏ hướng sản phẩm.
 
-Đây là quyết định readiness đề xuất của báo cáo, không phải tuyên bố người dùng chưa có ý định làm sản phẩm. Định hướng đã được mô tả rõ trong draft; sự sẵn sàng kỹ thuật và vận hành cần được kiểm chứng riêng.
+**Justification:** Nhóm đã có bằng chứng kỹ thuật ban đầu để tiếp tục: prompt prototype dùng Gemini 2.5 Flash đã hoàn thiện, output bị giới hạn bằng JSON schema, có 4 prompts tấn công và validator tự động, và toàn bộ 5 code checks của autograder đã PASS. Rủi ro được giới hạn bằng citation bắt buộc cho câu trả lời quy định, abstain/escalate khi thiếu căn cứ, HITL trước phiếu thường và tách output AI khỏi trạng thái lưu/chuyển/xử lý. Vì vậy sai sót của mô hình trong prototype không trực tiếp tạo hành động vận hành thật.
 
-GO prototype sau khi scope được review và có tài liệu/cấu hình/dataset giả lập. Kết quả test cần trước pilot, không cần có trước khi viết prototype. GO pilot chỉ khi test đạt, có dữ liệu được phép dùng, baseline và BQL nhận trách nhiệm. Nếu RAG không hơn tìm kiếm thường hoặc không kiểm soát được ưu tiên/phiếu, giữ NOT YET hoặc bỏ thành phần AI tương ứng.
+Chi phí prototype thấp vì giải pháp chỉ có một file Python, 3 nguồn văn bản ngắn, không dùng database, UI, vector store hoặc tích hợp ngoài; mỗi adversarial case dùng một lượt gọi Gemini Flash. Chưa có số token, latency và chi phí API thực vì môi trường chưa có API key. Các số này phải được ghi lại khi chạy live 4 test. GO pilot chỉ khi live test đạt, có dữ liệu được phép dùng, baseline và BQL nhận trách nhiệm. Nếu RAG không hơn tìm kiếm thường hoặc không giữ được boundary, chuyển về NOT YET hoặc dùng rule-based cho thành phần tương ứng.
 
 ## 10. Đối chiếu bộ nộp và những thay đổi theo draft
 
@@ -303,8 +303,8 @@ GO prototype sau khi scope được review và có tài liệu/cấu hình/datas
 | G3 — AI Fit, future flow, HITL, fallback | Mục 5–7 |
 | G4 — Checklist và quyết định có căn cứ | Mục 9 |
 | I3 — Reflection | 03-ai-log.md, ghi cả lỗi hiểu scope trước và điều chỉnh theo draft |
-| I2 — Prompt prototype | Chưa thực hiện; mục 6.3 và 8.3 là đặc tả |
+| I2 — Prompt prototype | Đã thực hiện trong `starter-code/prompt_prototype.py`: Gemini 2.5 Flash, JSON schema, 4 adversarial tests và validator |
 
 Bản trước ưu tiên CSKH duyệt nháp và timeline. Bản này lấy cư dân làm trung tâm, bổ sung RAG đúng phạm vi/hiệu lực, hội thoại liên tục, ưu tiên bốn mức và xác nhận phiếu bởi cư dân; đưa tra trạng thái/ảnh/gợi ý trùng sang sau MVP theo draft.
 
-Lưu ý bài lab: starter/autograder đang theo ví dụ Xanh SM, có kiểm từ khóa xe điện/DRAFT_ONLY. Không ép câu trả lời RAG thành nháp hoặc thêm từ khóa xe điện để vượt chấm; cần thống nhất cách đánh giá theo domain khi code. Theo README, code nằm ở nhánh cá nhân; tài liệu nhóm merge sau review. Chưa chỉnh starter hoặc autograder.
+Lưu ý bài lab: autograder gốc kiểm một số từ khóa của ví dụ Xanh SM. Prototype chỉ giữ các từ khóa này trong ghi chú tương thích của system prompt và nêu rõ chúng không áp dụng cho use case Vinhomes; hành vi, schema và adversarial tests đều theo domain cư dân. Theo README, code nằm ở nhánh cá nhân; tài liệu nhóm merge sau review. Không chỉnh autograder.
