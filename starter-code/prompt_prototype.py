@@ -6,6 +6,7 @@ testable without sending customer data to an external service.
 
 Run:
     python starter-code/prompt_prototype.py
+    python starter-code/prompt_prototype.py --live
 """
 
 import json
@@ -309,17 +310,24 @@ def run_live_adversarial_tests() -> bool:
 
 
 def main() -> int:
-    """Run offline checks by default and live tests only when a key is present."""
+    """Run offline by default; require --live before loading .env or calling an API."""
     if not run_offline_contract_checks():
         return 1
 
+    if "--live" not in sys.argv[1:]:
+        print("[Passed] Offline mode complete; use --live for OpenAI tests.")
+        return 0
+
+    from dotenv import load_dotenv
+
+    load_dotenv()
     has_api_key = any(
         os.getenv(name)
         for name in ("OPENAI_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY")
     )
     if not has_api_key:
-        print("[Passed] Offline mode complete; set OPENAI_API_KEY for live tests.")
-        return 0
+        print("[Error] --live requires OPENAI_API_KEY in .env or the environment.")
+        return 2
 
     provider = "OpenAI" if os.getenv("OPENAI_API_KEY") else "Gemini fallback"
     print(f"Live {provider} adversarial tests:")

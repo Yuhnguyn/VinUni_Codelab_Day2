@@ -1,6 +1,7 @@
 # Environment Dependencies
 # List all required python packages here.
 openai
+python-dotenv
 google-genai
 google-generativeai
 pytest
