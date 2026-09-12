@@ -168,8 +168,8 @@ flowchart TD
     class HITL_Ticket humanStep;
     class RedAlert emergencyStep;
     class Fallback_CSKH fallbackStep;
-```
 ````
+
 
 Câu hỏi và phiếu nháp được lưu ngữ cảnh riêng trong cùng hội thoại. Khi cư dân hỏi quy định giữa lúc soạn phiếu, trả lời rồi quay lại nháp, không tạo phiếu mới hoặc làm mất thông tin. Thay khu/tòa làm mất hiệu lực các kết quả truy hồi/cấu hình cũ; phải tra lại trước trả lời hoặc gửi.
 
