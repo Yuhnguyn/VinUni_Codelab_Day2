@@ -1,0 +1,45 @@
+digraph CurrentState {
+  graph [
+    rankdir=LR,
+    bgcolor="#F7FAFC",
+    pad="0.3",
+    nodesep="0.35",
+    ranksep="0.65",
+    fontname="Arial",
+    label="VINPEARL — CURRENT-STATE CUSTOMER JOURNEY PLANNING\nWorking baseline: 25 minutes/guest (hypothesis to validate)\nIndividual work: Le Thi Thuy Trang (02678)",
+    labelloc=t,
+    fontsize=22,
+    fontcolor="#123B5D"
+  ];
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Arial",
+    fontsize=11,
+    color="#B8C7D1",
+    fillcolor="#FFFFFF",
+    fontcolor="#17324D",
+    margin="0.18,0.12",
+    penwidth=1.4
+  ];
+  edge [fontname="Arial", fontsize=9, color="#55758C", fontcolor="#55758C", penwidth=1.4, arrowsize=0.8];
+
+  booking [label="1. REVIEW BOOKING\nActor: Guest\n2 min\n\nInput: booking confirmation\nOutput: available trip window"];
+  discover [label="2. DISCOVER SERVICES\nActor: Guest\n8 min\n\nHotel • VinWonders • Safari\nF&B • Spa/Golf", fillcolor="#FFF1F0", color="#E5484D", penwidth=2.4];
+  compare [label="3. COMPARE CONSTRAINTS\nActor: Guest\n7 min\n\nTime • location • price\nage/height • preferences", fillcolor="#FFF1F0", color="#E5484D", penwidth=2.4];
+  concierge [label="4. ASK / VERIFY\nActor: Guest ↔ Concierge\n5 min\n\nClarify availability, policy\nand suitable options", fillcolor="#FFF8E6", color="#D99A00", penwidth=2.0];
+  compose [label="5. MANUALLY COMPOSE PLAN\nActor: Guest\n3 min\n\nOutput: personal itinerary"];
+  change [shape=diamond, label="Conflict or\nchange?", fillcolor="#EAF4FF", color="#2F80ED"];
+
+  booking -> discover [label="HANDOFF: App → Guest"];
+  discover -> compare [label="BOTTLENECK: fragmented discovery"];
+  compare -> concierge [label="HANDOFF: Guest → Staff"];
+  concierge -> compose [label="HANDOFF: Staff → Guest"];
+  compose -> change;
+  change -> discover [label="yes: search again", color="#E5484D", fontcolor="#E5484D", constraint=false];
+
+  bottleneck [shape=note, label="BOTTLENECK\n15 of 25 minutes spent discovering\nand reconciling constraints", fillcolor="#FFE3E1", color="#E5484D", fontcolor="#9C2A2E"];
+  compare -> bottleneck [style=dashed, arrowhead=none, color="#E5484D"];
+
+  legend [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="#E5484D">●</FONT></TD><TD ALIGN="LEFT">Bottleneck</TD></TR><TR><TD><FONT COLOR="#D99A00">●</FONT></TD><TD ALIGN="LEFT">Human handoff</TD></TR><TR><TD><FONT COLOR="#2F80ED">●</FONT></TD><TD ALIGN="LEFT">Rework loop</TD></TR></TABLE>>];
+}
