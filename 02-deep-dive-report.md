@@ -131,35 +131,45 @@ Câu hỏi quy định thông thường có nguồn hợp lệ được trả l�
 
 ```mermaid
 flowchart TD
-    A[Cư dân nhập câu hỏi hoặc phản ánh] --> B[Rule: xác thực, ngữ cảnh, kiểm dấu hiệu khẩn]
-    B -->|Khẩn / nghi ngờ nguy hiểm| U[Hiển thị kênh đã cấu hình; chuyển người trực]
-    B -->|Chưa phát hiện khẩn| C{Ý định rõ?}
-    C -->|Chưa rõ| D[AI hỏi làm rõ ý định]
-    D --> A
-    C -->|Hỏi quy định| Q1[Rule: xác định khu/tòa, lọc tài liệu được duyệt còn hiệu lực]
-    Q1 --> Q2[RAG: truy hồi và AI soạn trả lời có nguồn]
-    Q2 --> Q3{Nguồn hỗ trợ, không mâu thuẫn?}
-    Q3 -->|Có| Q4[Trả lời kèm nguồn; giữ ngữ cảnh]
-    Q3 -->|Không / lỗi| Q5[Nêu giới hạn; đề nghị BQL hỗ trợ]
-    C -->|Phản ánh| P1[AI hỏi trường thiếu; đề xuất nhóm và ưu tiên]
-    P1 -->|Phát hiện khẩn| U
-    P1 --> P2[RAG tra quy trình; rule kiểm cấu hình nhận]
-    P2 --> P3[Cư dân xem, sửa, xác nhận tóm tắt]
-    P3 -->|Sửa| P1
-    P3 -->|Xác nhận| P4[Rule: kiểm phiên bản, lưu phiếu chống gửi lặp]
-    P4 --> P5{Lưu thành công?}
-    P5 -->|Không / chưa rõ| F[Báo chưa xác nhận; tra theo khóa gửi trước retry]
-    P5 -->|Có| P6[Trả mã phiếu; rule định tuyến]
-    P6 --> P7[BQL nhận; chỉnh nhóm/ưu tiên và xử lý ngoại lệ]
-    Q4 -->|Hỏi tiếp / muốn phản ánh| A
-    Q5 -->|Cư dân đồng ý chuyển| P1
-    classDef ai fill:#dbeafe,stroke:#2563eb;
-    classDef human fill:#dcfce7,stroke:#15803d;
-    classDef fallback fill:#fff1db,stroke:#b45309;
-    class D,Q2,P1 ai;
-    class A,U,P3,P7 human;
-    class Q5,F fallback;
+    %% Khởi đầu luồng
+    Start(["📱 Cư dân gửi tin nhắn / yêu cầu qua App Vinhomes Resident"]) --> IntentRouter{"🔵 BƯỚC AI 1:\nPhân loại Ý định (Intent Classification)"}
+
+    %% NHÁNH 1: BÁO LỖI / SỰ CỐ / KHIẾU NẠI (TICKET ROUTE)
+    IntentRouter -- "Ý định: Báo hỏng / Sự cố kỹ thuật" --> LLM_Extract["🔵 BƯỚC AI 2 (LLM Extraction):\nTrích xuất Số căn hộ, Tòa nhà,\nLoại sự cố & Mức độ nghiêm trọng"]
+    
+    LLM_Extract --> EmergencyCheck{"Kiểm tra Nguy cấp?\n(Cháy nổ, kẹt thang máy, rò điện/gas)"}
+    
+    EmergencyCheck -- "🔴 CÓ (NGUY HIỂM TÍNH MẠNG)" --> RedAlert["🔴 KÍCH HOẠT CÒI BÁO ĐỘNG ĐỎ:\nBắn còi cảnh báo khẩn cấp tới\nĐội An ninh & Kỹ thuật trực 24/7 (< 10s)"]
+    
+    EmergencyCheck -- "KHÔNG" --> AutoTicket["🔵 BƯỚC AI 3:\nTự động tạo bản nháp Ticket [DRAFT_ONLY]\n& Phân luồng đến Đội kỹ thuật (Điện/Nước/Vệ sinh)"]
+    
+    AutoTicket --> HITL_Ticket["🟢 BƯỚC CON NGƯỜI (HITL):\nCSKH BQL tòa nhà bấm 'Xác nhận duyệt' (1-click)\nđể phát lệnh tới Kỹ thuật viên hiện trường"]
+    
+    HITL_Ticket --> TechDispatched["🛠️ Kỹ thuật viên nhận nhiệm vụ trên Tablet\n& đến căn hộ xử lý sự cố"]
+
+    %% NHÁNH 2: HỎI NỘI QUY / THỦ TỤC TÒA NHÀ (RAG ROUTE)
+    IntentRouter -- "Ý định: Tra cứu quy định / Thủ tục" --> RAG_Retrieve["🔵 BƯỚC AI (RAG Retrieval):\nTruy vấn Cẩm nang Cư dân & Nội quy tòa nhà\n(Vinhomes House Rules Vector Database)"]
+    
+    RAG_Retrieve --> RAG_Gen["🔵 BƯỚC AI (LLM Response):\nTổng hợp câu trả lời chuẩn xác\nkèm trích dẫn điều khoản (Giờ thi công, phí gửi xe...)"]
+    
+    RAG_Gen --> ConfidenceCheck{"Độ tin cậy (Confidence)?\nScore >= 85%"}
+    
+    ConfidenceCheck -- "Đạt chuẩn (>= 85%)" --> ReplyResident["💬 Gửi câu trả lời tức thì cho cư dân\ntrên giao diện chat của App (< 3s)"]
+    
+    ConfidenceCheck -- "Không chắc chắn (< 85%)" --> Fallback_CSKH["↩️ BƯỚC DỰ PHÒNG (FALLBACK):\nChuyển tiếp hội thoại sang Tổng đài viên CSKH\nđể tư vấn trực tiếp cho cư dân"]
+
+    %% Stylings cho các khối
+    classDef aiStep fill:#0284C7,stroke:#0369A1,stroke-width:2px,color:#FFFFFF;
+    classDef humanStep fill:#16A34A,stroke:#15803D,stroke-width:2px,color:#FFFFFF;
+    classDef emergencyStep fill:#DC2626,stroke:#991B1B,stroke-width:2px,color:#FFFFFF;
+    classDef fallbackStep fill:#D97706,stroke:#B45309,stroke-width:2px,color:#FFFFFF;
+
+    class IntentRouter,LLM_Extract,AutoTicket,RAG_Retrieve,RAG_Gen aiStep;
+    class HITL_Ticket humanStep;
+    class RedAlert emergencyStep;
+    class Fallback_CSKH fallbackStep;
 ```
+````
 
 Câu hỏi và phiếu nháp được lưu ngữ cảnh riêng trong cùng hội thoại. Khi cư dân hỏi quy định giữa lúc soạn phiếu, trả lời rồi quay lại nháp, không tạo phiếu mới hoặc làm mất thông tin. Thay khu/tòa làm mất hiệu lực các kết quả truy hồi/cấu hình cũ; phải tra lại trước trả lời hoặc gửi.
 
