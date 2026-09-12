@@ -6,9 +6,9 @@
 
 Quét **6 bài toán độc lập ở 6 đơn vị**: Vinhomes, VinFast, Xanh SM/GSM, Vinmec, Vinpearl và VinUni. Dùng phạm vi hệ sinh thái theo worksheet/inspiration kit của lab; đây không phải báo cáo xác minh cơ cấu sở hữu pháp nhân. Giữ tên Xanh SM theo worksheet; các trang nguồn hiện hiển thị Green SM.
 
-Phase 2 phân tích 3 ứng viên thuộc **Vinhomes, VinFast và Vinpearl**. **Chưa chốt bài toán đi sâu hoặc MVP.** Người dùng sẽ review rồi chọn; quản lý cư dân là một ứng viên, không phải giới hạn áp dụng cho toàn bộ SCAN.
+Phase 2 phân tích 3 ứng viên thuộc **Vinhomes, VinFast và Vinpearl**. Sau vòng SCAN, người dùng cung cấp draft để xác định hướng P1: **trợ lý hội thoại cư dân với hỏi đáp RAG và tiếp nhận phản ánh**. Báo cáo được điều chỉnh theo hướng này để review trước code; chưa phải phê duyệt triển khai thực tế.
 
-Báo cáo Deep Dive và sơ đồ ResidentCare đã chuẩn bị là **phương án tham khảo riêng cho P1**, dùng nếu người dùng chọn bài toán cư dân. Không gộp 6 bài toán hoặc 3 cards thành một sản phẩm.
+Deep Dive và sơ đồ hiện phân tích P1 theo [draft tính năng người dùng cung cấp](vinhomes-agent-feature-draft.md). SCAN vẫn giữ sáu bài toán độc lập; chỉ Card cư dân và phần lựa chọn được cập nhật. Không gộp ba cards thành một sản phẩm.
 
 ## 2. Bằng chứng và giới hạn nghiên cứu
 
@@ -32,7 +32,7 @@ Truy cập nguồn ngày 12/09/2026. Các pain chưa đo được ghi là **gi�
 
 | ID | Subsidiary / Đơn vị theo lab | Lens | Bài toán cụ thể và ai đang đau | Điểm bắt đầu → Kết quả nghiệp vụ | Căn cứ và khoảng trống |
 |---|---|---|---|---|---|
-| **P1** | **Vinhomes** | **Lặp lại; Tốn thời gian** | **Phản ánh cư dân thiếu thông tin hoặc chuyển sai đầu mối:** CSKH phải hỏi lại vị trí/sự cố rồi xác định nhóm nhận; cư dân chờ được tiếp nhận đúng | Cư dân báo vấn đề → phiếu đủ dữ kiện được bàn giao đúng bộ phận | E1–E2; chưa xác nhận tỷ lệ thiếu/chuyển sai tại cụm tòa cụ thể |
+| **P1** | **Vinhomes** | **Lặp lại; Tốn thời gian; AI-upgrade** | **Cư dân khó tìm đúng quy định và chuyển nhu cầu sang phản ánh đủ thông tin:** có thể phải tra tài liệu, hỏi CSKH rồi mô tả lại để được tiếp nhận | Cư dân cần hỗ trợ → câu trả lời có nguồn phù hợp hoặc phiếu được cư dân xác nhận và hệ thống tiếp nhận | E1–E2 xác nhận nghiệp vụ; việc mất ngữ cảnh/chậm tra cứu là giả thuyết cần khảo sát. Draft xác định phạm vi sản phẩm, không chứng minh pain |
 | **P2** | **VinFast** | **Tốn thời gian** | **Yêu cầu sửa chữa/bảo dưỡng chưa đủ để xếp lịch phù hợp:** cố vấn dịch vụ phải làm rõ nhu cầu và đối chiếu năng lực xưởng; khách có thể phải đổi lịch | Khách yêu cầu dịch vụ → lịch hẹn phù hợp được cố vấn và khách xác nhận | E3; việc hỏi lại/đổi lịch và tần suất là giả thuyết cần log lịch hẹn |
 | **P3** | **Xanh SM / GSM** | **Stakeholder Pain** | **Tài xế và khách khó thống nhất điểm đón tại nơi nhiều cổng/lối vào:** phải gọi hoặc nhắn nhiều lần dù đã có ghim bản đồ | Khách đặt chuyến → hai bên xác nhận cùng điểm đón được phép tiếp cận | E4 xác nhận luồng địa điểm; pain cổng/lối vào cần quan sát tại một khu vực, không suy ra từ GPS rằng hệ thống đang lỗi |
 | **P4** | **Vinmec** | **Lặp lại; Stakeholder Pain** | **Yêu cầu đặt/đổi lịch khám thiếu thông tin hành chính:** lễ tân phải hỏi lại cơ sở, lịch mong muốn, lịch hẹn cũ và thông tin liên hệ trước khi kiểm tra chỗ | Khách yêu cầu đặt/đổi lịch → lịch hành chính được xác nhận hoặc chuyển nhân viên phù hợp | E5; chưa có số vòng hỏi lại hoặc thời gian xử lý; không đưa chẩn đoán/chọn chuyên khoa bằng AI vào scope |
@@ -43,7 +43,7 @@ Truy cập nguồn ngày 12/09/2026. Các pain chưa đo được ghi là **gi�
 
 | ID | Đối tượng nghiệp vụ | Metric đặc trưng để khảo sát | Hướng giải quyết sơ bộ |
 |---|---|---|---|
-| P1 | Phiếu phản ánh và nhóm xử lý | Thời gian chuẩn bị phiếu; tỷ lệ bàn giao đúng lần đầu | Form + rule; thử LLM trích dữ kiện và nháp câu hỏi |
+| P1 | Câu hỏi/quy định và phiếu phản ánh trong cùng phiên hỗ trợ | Đúng nguồn/phạm vi; công hỗ trợ; đúng nhóm/ưu tiên; tạo/chuyển phiếu thành công | LLM + RAG cho câu trả lời, rule cho quyền/lưu/định tuyến; cư dân xác nhận phiếu thường |
 | P2 | Lịch hẹn, loại dịch vụ và năng lực xưởng | Thời gian xác nhận lịch; tỷ lệ đổi lịch do sai dịch vụ/năng lực | Rule kiểm slot/năng lực; LLM chỉ làm rõ nhu cầu văn bản |
 | P3 | Điểm đón và sự thống nhất khách–tài xế | Số lượt liên hệ; thời gian từ đến khu vực đón đến gặp khách | Danh mục điểm đón hợp lệ + bản đồ; chỉ thử LLM nếu ghi chú ngôn ngữ gây khó hiểu |
 | P4 | Lịch khám hành chính | Tỷ lệ yêu cầu đủ thông tin lần đầu; thời gian đặt/đổi lịch | Form + kiểm lịch là baseline; LLM tùy giá trị tăng thêm |
@@ -56,7 +56,7 @@ Sáu bài toán có đầu vào, bên chịu trách nhiệm và kết quả riê
 
 | Bài toán | Insight cần kiểm chứng, không phải lời người đã phỏng vấn | Cách kiểm chứng / điều kiện bác bỏ |
 |---|---|---|
-| P1 | Cư dân cần việc được hiểu đúng và có người nhận; thêm một chatbot chưa chắc giải quyết được chờ bàn giao | Xem 50 phiếu liên tiếp và phỏng vấn CSKH/cư dân; giảm ưu tiên nếu hệ thống hiện hữu đã tiếp nhận đúng, đủ và nhanh |
+| P1 | Cư dân cần giữ ngữ cảnh từ hỏi quy định đến báo vấn đề; câu trả lời có nguồn và phiếu đã tiếp nhận là hai kết quả phải phân biệt rõ | Khảo sát 30 câu hỏi, 50 phản ánh và các lượt chuyển giữa hai nhu cầu; đo hỏi lại/công tìm nguồn. Bác bỏ pain nếu công cụ hiện hữu đã đáp ứng tốt |
 | P2 | Khách cần một lần đến xưởng có thể thực hiện công việc, không chỉ một giờ hẹn được ghi nhận | Đối chiếu yêu cầu ban đầu với lịch thực hiện; bác bỏ pain nếu hỏi lại/đổi lịch do tiếp nhận gần như không xảy ra |
 | P3 | Một ghim bản đồ có thể chưa diễn đạt được cổng và hướng tiếp cận mà hai bên hiểu giống nhau | Quan sát 20 lượt đón ở nơi nhiều cổng; nếu danh mục điểm đón giải quyết đủ thì không cần LLM |
 | P4 | Người đặt lịch cần biết thông tin nào còn thiếu để xác nhận, tránh lặp lại cùng dữ kiện nhiều lần | Đọc 30 lượt đặt/đổi lịch đã giảm định danh; nếu form bắt buộc đã giải quyết đủ thì bỏ phần AI |
@@ -67,26 +67,27 @@ Không xem mô hình tự đề xuất insight là nghiên cứu người dùng 
 
 ## 5. Phase 2 — 3 Quick Problem Cards
 
-Chọn **P1 — Vinhomes, P2 — VinFast, P5 — Vinpearl** để đánh giá sâu hơn trong Phase 2. Đây là ba ứng viên cho người dùng so sánh, chưa chọn một bài làm MVP.
+Chọn **P1 — Vinhomes, P2 — VinFast, P5 — Vinpearl** để đánh giá sâu hơn trong Phase 2. Sau so sánh, draft của người dùng định hướng P1 cho báo cáo sản phẩm; hai cards còn lại được giữ để thể hiện quá trình lựa chọn.
 
 **Quy ước:** toàn bộ số phút hiện trạng dưới đây là giả định thiết kế, chưa đo tại doanh nghiệp. Ngưỡng thành công là mục tiêu đề xuất. Chỉ đo thao tác nhân viên; thời gian chờ khách/nguồn lực tính riêng. “Workflow hiện tại” là mô hình cần xác nhận, không khẳng định đang làm hoàn toàn thủ công.
 
-### Quick Problem Card 1 — P1: Vinhomes — Chuẩn hóa và bàn giao phản ánh cư dân
+### Quick Problem Card 1 — P1: Vinhomes — Trợ lý hỏi quy định và tiếp nhận phản ánh
 
 | Trường | Nội dung |
 |---|---|
-| **Bài toán (1 câu)** | CSKH mất thời gian làm rõ phản ánh tự do để chuyển phiếu đủ thông tin đến đúng nhóm xử lý |
+| **Bài toán (1 câu)** | Cư dân cần tìm đúng quy định và gửi phản ánh mà không phải tự nối các nguồn thông tin hoặc lặp lại ngữ cảnh qua nhiều bước hỗ trợ |
 | **Công ty thành viên** | Vinhomes |
-| **Actor / Ai đang đau?** | CSKH/BQL thao tác; kỹ thuật/vệ sinh/an ninh nhận việc; cư dân chịu thời gian chờ |
-| **Workflow hiện tại — 5 bước** | 1. Nhận và mở phiếu (1 phút) → 2. Đọc/hỏi dữ kiện thiếu (3 phút) → 3. Chọn nhóm (2 phút) → 4. Soạn xác nhận (1 phút) → 5. Ghi nhận bàn giao (1 phút) |
-| **Bottleneck** | Bước 2–4: 6/8 phút thao tác giả định; chưa tính chờ cư dân bổ sung và nhóm nhận |
-| **AI Solution / Bước hỗ trợ** | Bước 2–4: trích vị trí/sự cố, phát hiện trường thiếu, đề xuất nhóm, nháp câu hỏi hoặc xác nhận có căn cứ |
-| **Metric có số** | Median thao tác mục tiêu từ giả định 8 xuống ≤4 phút/phiếu, đồng thời giảm ≥30% so với form + rule trong thử nghiệm; đề xuất nhóm đúng ≥36/40 ca đủ dữ kiện; 0 gửi/đóng phiếu không được duyệt trong bộ test |
-| **Dữ liệu cần có** | Phiếu ẩn danh, danh mục tòa/vị trí/nhóm, nhãn nhóm đúng và thời điểm thao tác |
-| **Quick Architecture** | **Rule + LLM Feature**; baseline form + rule; không cần Agent |
-| **HITL / Fallback** | CSKH xem bản gốc và duyệt trước gửi/bàn giao. Lỗi/thiếu dữ kiện → form thủ công; dấu hiệu nguy hiểm → người trực |
-| **Cấm AI** | Tự gửi, đóng việc, phạt cư dân, hứa thời gian sửa hoặc truy xuất căn khác |
-| **Điều kiện xem xét tiếp** | Có CSKH xác nhận pain và cho quan sát; nếu công cụ hiện hữu/form + rule đạt ngang hoặc hơn thì bỏ AI |
+| **Actor / Ai đang đau?** | Cư dân là người dùng chính; CSKH/BQL tra cứu và tiếp nhận; bộ phận chuyên trách nhận phiếu |
+| **Workflow hiện tại — 5 bước chung** | 1. Cư dân nêu nhu cầu → 2. Xác định khu/tòa và nội dung → 3. Tra quy định nếu hỏi đáp, hoặc làm rõ/phân loại/ưu tiên nếu phản ánh → 4. Trả lời có căn cứ hoặc xác nhận bản tóm tắt → 5. Hỏi tiếp hoặc lưu/chuyển phiếu. Hai nhánh có điểm kết thúc riêng |
+| **Bottleneck** | Nhánh hỏi: tìm đúng tài liệu và diễn giải, giả định 5/6 phút CSKH. Nhánh phản ánh: làm rõ, tra quy trình/nhóm/ưu tiên, giả định 5/8 phút. Không cộng 6 và 8 thành thời gian một lượt |
+| **AI Solution / Bước hỗ trợ** | Một chat giữ ngữ cảnh; RAG trả lời từ tài liệu được duyệt đúng khu/tòa/hiệu lực và dẫn nguồn; phản ánh được hỏi bổ sung, phân loại 7 nhóm, đề xuất ưu tiên P0–P3, tra quy trình khi cần |
+| **Metric có số** | RAG đúng và có căn cứ ≥18/20 ca đủ nguồn; 20/20 ca không đủ căn cứ xử lý giới hạn đúng. Đúng nhóm và ưu tiên mỗi chỉ số ≥36/40 ca phản ánh; 10/10 ca khẩn đi đúng luồng. Công CSKH mục tiêu A 6→≤2 phút, B 8→≤4 phút và mỗi nhánh giảm ≥30% so baseline riêng |
+| **Dữ liệu cần có** | Kho tài liệu mẫu + metadata hiệu lực/phạm vi/nguồn, cấu hình nhóm/ưu tiên/đầu mối/kênh khẩn, tài khoản và hệ thống phiếu demo; dữ liệu giả lập ghi rõ |
+| **Quick Architecture** | **LLM Feature + RAG + Rule/State machine**; agent hội thoại có công cụ giới hạn, không Agentic Loop tự trị |
+| **HITL / Fallback** | Hỏi đáp đủ nguồn trả trực tiếp; thiếu/mâu thuẫn chuyển BQL. Phiếu thường do cư dân kiểm tra/xác nhận, hệ thống định tuyến theo cấu hình, BQL sửa nhóm/ưu tiên. P0 chuyển người trực không chờ đủ form; demo ghi rõ mô phỏng |
+| **Cấm AI** | Bịa quy định/nguồn, mã phiếu hoặc trạng thái; tự hứa SLA, xử phạt/bồi thường, tra công nợ/dữ liệu người khác, điều khiển thiết bị |
+| **Ranh giới MVP** | Hai màn: chat cư dân và danh sách phiếu BQL. Tra trạng thái, ảnh, gợi ý trùng sự cố và đánh giá câu trả lời sau MVP. Chống gửi lặp kỹ thuật vẫn trong MVP |
+| **Điều kiện xem xét tiếp** | Có tài liệu/cấu hình/bộ test, review scope rồi code. Chưa có log/phỏng vấn BQL chứng minh hiệu quả; so với tìm kiếm tài liệu + form trước khi pilot |
 
 ### Quick Problem Card 2 — P2: VinFast — Chuẩn bị lịch hẹn dịch vụ phù hợp năng lực xưởng
 
@@ -126,7 +127,7 @@ Chọn **P1 — Vinhomes, P2 — VinFast, P5 — Vinpearl** để đánh giá s�
 
 | Ứng viên | Có vào Phase 2? | Lý do sàng lọc sơ bộ |
 |---|---|---|
-| P1 — Vinhomes | **Có — Card 1** | Quy trình tiếp nhận có căn cứ công khai; phạm vi nhỏ, dữ liệu demo dễ chuẩn bị, phù hợp định hướng cư dân người dùng đang cân nhắc |
+| P1 — Vinhomes | **Có — Card 1** | Quy trình tiếp nhận có căn cứ công khai; phạm vi nhỏ, dữ liệu demo dễ chuẩn bị, phù hợp draft hai luồng cư dân người dùng cung cấp |
 | P2 — VinFast | **Có — Card 2** | Kết quả lịch hợp lệ kiểm tra được; thể hiện rõ ranh giới giữa hiểu ngôn ngữ và rule tài nguyên |
 | P3 — Xanh SM | Chưa | Cần dữ liệu điểm đón và kiểm chứng thực địa; danh mục cổng/điểm đón có thể giải quyết tốt hơn LLM |
 | P4 — Vinmec | Chưa | Form hành chính có thể đủ; chưa có log đặt lịch để chứng minh AI giảm hỏi lại, không mở rộng sang chuyên môn y tế |
@@ -137,15 +138,15 @@ Chọn **P1 — Vinhomes, P2 — VinFast, P5 — Vinpearl** để đánh giá s�
 
 | Tiêu chí người dùng cần cân nhắc | Card 1 — Vinhomes | Card 2 — VinFast | Card 3 — Vinpearl |
 |---|---|---|---|
-| Đầu ra MVP | Phiếu chuẩn bị bàn giao | Đề xuất lịch hẹn hợp lệ | Bản yêu cầu đoàn + phương án nháp |
-| Phụ thuộc vận hành lớn nhất | Bảng nhóm nhận và quy trình tòa | Lịch/năng lực xưởng đáng tin cậy | Tồn phòng, bảng giá và điều kiện dịch vụ |
-| Baseline không AI | Form + rule phân nhóm | Form + bộ lọc slot/năng lực | Form yêu cầu đoàn + mẫu phương án |
-| Phần AI cần chứng minh | Giảm đọc/hỏi lại mà không chuyển sai | Giảm làm rõ nhu cầu, không thay kiểm tra slot | Giảm tổng hợp mà không bỏ sót/mâu thuẫn |
-| Trạng thái | Chờ người dùng lựa chọn | Chờ người dùng lựa chọn | Chờ người dùng lựa chọn |
+| Đầu ra MVP | Câu trả lời RAG có nguồn + phiếu phản ánh được xác nhận | Đề xuất lịch hẹn hợp lệ | Bản yêu cầu đoàn + phương án nháp |
+| Phụ thuộc vận hành lớn nhất | Tài liệu đúng hiệu lực/phạm vi và cấu hình nhận/ưu tiên | Lịch/năng lực xưởng đáng tin cậy | Tồn phòng, bảng giá và điều kiện dịch vụ |
+| Baseline không AI | Tìm kiếm tài liệu + CSKH, form + rule định tuyến | Form + bộ lọc slot/năng lực | Form yêu cầu đoàn + mẫu phương án |
+| Phần AI cần chứng minh | Đúng nguồn; giữ ngữ cảnh; giảm hỏi lại và đúng ưu tiên | Giảm làm rõ nhu cầu, không thay kiểm tra slot | Giảm tổng hợp mà không bỏ sót/mâu thuẫn |
+| Trạng thái | Hướng người dùng yêu cầu đặc tả theo draft | Giữ để so sánh | Giữ để so sánh |
 
-**Quyết định chọn bài toán đi sâu: chưa thực hiện.** Sau review, người dùng có thể chọn P1 để tiếp tục hướng quản lý cư dân. Các tài liệu [02-deep-dive-report.md](02-deep-dive-report.md) và [04-workflow-diagram.png](04-workflow-diagram.png) hiện chỉ minh họa phương án P1; chúng không đại diện quyết định đã chốt.
+**Hướng đi sâu theo draft mới: P1 — Trợ lý AI cư dân, hai luồng RAG và phản ánh.** Các tài liệu [02-deep-dive-report.md](02-deep-dive-report.md) và [04-workflow-diagram.png](04-workflow-diagram.png) đã được sửa theo ý định này. Đây là định hướng soạn báo cáo để review trước code, không phải xác nhận BQL đã duyệt pilot hoặc các giả thuyết đã được kiểm chứng.
 
-## 7. Việc cần làm sau khi chọn một bài toán
+## 7. Việc cần làm trước khi triển khai hướng đã đặc tả
 
 1. Chỉ định chủ sở hữu quy trình và xác nhận hệ thống hiện có đã giải quyết những phần nào.
 2. Thu mẫu liên tiếp theo khoảng ngày xác định, giảm định danh; không chỉ chọn ca dễ hoặc ca lỗi để minh họa.
@@ -153,6 +154,6 @@ Chọn **P1 — Vinhomes, P2 — VinFast, P5 — Vinpearl** để đánh giá s�
 4. Đo thao tác, chờ, tỷ lệ hỏi lại/sai và công sửa riêng; thay mọi baseline giả định bằng dữ liệu quan sát.
 5. So với form/checklist/rule trước khi quyết định thêm LLM. Nếu không có lợi ích tăng thêm, bỏ AI hoặc chọn bài toán khác.
 
-Nếu chọn P1: đề xuất phỏng vấn 5 cư dân, 2 CSKH, 1 kỹ thuật và 1 quản lý; quan sát 10 phiếu và xem 50 phiếu ẩn danh. Đây là kế hoạch chưa thực hiện, không phải kết quả insight đã được xác nhận.
+Với P1: đề xuất phỏng vấn 5 cư dân, 2 CSKH, 1 kỹ thuật và 1 quản lý; thu 30 câu hỏi quy định, quan sát 10 phiếu và xem 50 phiếu ẩn danh; kiểm chứng cả hành vi chuyển từ hỏi sang phản ánh. Đây là kế hoạch chưa thực hiện, không phải kết quả insight đã được xác nhận.
 
 **Đối chiếu yêu cầu:** Phase 1 có đúng 6 bài toán, phủ đủ 4 lenses; Phase 2 có đúng 3 Quick Cards với Actor, workflow 5 bước, bottleneck, AI Solution, metric có số và kiến trúc. Chưa code, chưa chạy prototype, chưa có quyết định GO cho triển khai thực tế.
