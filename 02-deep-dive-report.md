@@ -46,7 +46,13 @@ Giả thuyết thiết kế: một khách tự lập lịch mất khoảng **25 
 | 4 | Khách ↔ Concierge | Hỏi lại thông tin chưa rõ hoặc yêu cầu tư vấn | Câu hỏi → thông tin xác nhận | 5 phút | 🔄 Handoff |
 | 5 | Khách | Ghép lịch và chỉnh khi có xung đột | Lựa chọn → lịch cá nhân | 3 phút | Có thể phải quay lại bước 2 |
 
-**Tổng working baseline: 25 phút/lượt.** Sơ đồ trực quan nằm tại `04-workflow-diagram.png`.
+**Tổng working baseline: 25 phút/lượt.** Hai bottleneck “Discover Services” và “Compare Constraints” chiếm 15/25 phút; handoff Guest ↔ Concierge làm tăng thời gian chờ và có thể đẩy khách quay lại bước tìm kiếm.
+
+### Sơ đồ Current-State Workflow
+
+![Vinpearl current-state customer journey planning workflow](./04-workflow-diagram.png)
+
+**Cách đọc sơ đồ:** viền đỏ là bottleneck, viền vàng là human handoff, hình thoi xanh là điểm quyết định và mũi tên đỏ là vòng lặp rework. Toàn bộ thời gian là working baseline cần xác thực trong discovery, không phải số liệu vận hành đã được Vinpearl công bố.
 
 ### Root-cause hypothesis
 
@@ -79,30 +85,38 @@ Giả thuyết thiết kế: một khách tự lập lịch mất khoảng **25 
 
 **Retrieval + deterministic rules + LLM generation + confirmation gate.** LLM không phải source of truth.
 
-```text
-Booking + consented preferences
-              │
-              ▼
-     Data minimization / profile
-              │
-              ▼
-Approved catalog + live facts ──► Constraint engine
-                                      │
-                                      ▼
-                              Feasible candidates
-                                      │
-                                      ▼
-                               LLM itinerary draft
-                                      │
-                                      ▼
-                         Post-generation validator
-                           │ valid          │ invalid
-                           ▼                ▼
-                    Guest review       Safe fallback
-                           │
-                           ▼
-                 Explicit booking confirmation
+```mermaid
+flowchart TB
+    B["Booking context"] --> M["Data minimization"]
+    P["Consented preferences"] --> M
+    C["Approved service catalog"] --> R["Retrieval layer"]
+    L["Live facts: opening hours, price, availability"] --> R
+    M --> E["Deterministic constraint engine"]
+    R --> E
+    E --> F["Feasible candidates only"]
+    F --> A["🔵 OpenAI: itinerary draft"]
+    A --> V{"Schema and constraint validator"}
+    V -- "Valid" --> H["🟢 Guest or concierge review"]
+    V -- "Invalid" --> X["↩️ Safe fallback / regenerate once"]
+    X --> H
+    H --> T["Transactional booking system"]
+    T --> Q{"Explicit customer confirmation?"}
+    Q -- "Yes" --> D(["Booking action executed by system"])
+    Q -- "No" --> H
+
+    classDef source fill:#EAF4FF,stroke:#2F80ED,color:#17324D;
+    classDef rule fill:#F3EEFF,stroke:#7A5AF8,color:#2D2357;
+    classDef ai fill:#E9FBF0,stroke:#22A06B,color:#153F2C;
+    classDef human fill:#FFF8E6,stroke:#D99A00,color:#5C4300;
+    classDef fallback fill:#FFF1F0,stroke:#E5484D,color:#6B1F24;
+    class B,P,C,L,R,M source;
+    class E,F,V rule;
+    class A ai;
+    class H,T,Q,D human;
+    class X fallback;
 ```
+
+Sơ đồ kiến trúc nhấn mạnh LLM không đọc dữ liệu thô tùy ý và không phải source of truth. Retrieval chỉ đưa catalog/fact đã duyệt vào constraint engine; validator kiểm tra lại output trước khi con người nhìn thấy hoặc chuyển sang hệ thống giao dịch.
 
 ## 5. Future-State Flow
 
@@ -115,6 +129,39 @@ Approved catalog + live facts ──► Constraint engine
 | 5 | System | Validator kiểm tra ID dịch vụ, overlap, freshness và mọi hard constraint. | Lỗi thì không hiển thị như một lịch hợp lệ. |
 | 6 | Human | Khách hoặc concierge xem, sửa và chọn item muốn đặt. | Không có giao dịch ngầm. |
 | 7 | System | Booking engine hiển thị giá/availability mới nhất và yêu cầu xác nhận cuối. | Source of truth là hệ thống giao dịch, không phải LLM. |
+
+### Sơ đồ Future-State Workflow có AI, HITL và Fallback
+
+```mermaid
+flowchart LR
+    G(["🟢 Khách opt-in"]) --> S["Đọc booking và preference được phép"]
+    S --> R["Truy xuất catalog và live facts"]
+    R --> C{"Rules: hard constraints đạt?"}
+    C -- "Không" --> F1["↩️ Hỏi làm rõ hoặc lịch mẫu an toàn"]
+    C -- "Có" --> A["🔵 OpenAI tạo itinerary draft"]
+    A --> V{"Validator pass?"}
+    V -- "Không, lần 1" --> RE["↩️ Loại item lỗi và regenerate 1 lần"]
+    RE --> V
+    V -- "Không, lần 2" --> F2["🟢 Chuyển concierge"]
+    V -- "Có" --> H["🟢 Khách/concierge review và chỉnh"]
+    H --> B["Booking engine kiểm tra giá và availability mới nhất"]
+    B --> Q{"Khách xác nhận?"}
+    Q -- "Chưa" --> H
+    Q -- "Có" --> DONE(["Hệ thống giao dịch thực hiện đặt"])
+
+    classDef system fill:#EAF4FF,stroke:#2F80ED,color:#17324D;
+    classDef rule fill:#F3EEFF,stroke:#7A5AF8,color:#2D2357;
+    classDef ai fill:#E9FBF0,stroke:#22A06B,color:#153F2C;
+    classDef human fill:#FFF8E6,stroke:#D99A00,color:#5C4300;
+    classDef fallback fill:#FFF1F0,stroke:#E5484D,color:#6B1F24;
+    class S,R,B system;
+    class C,V rule;
+    class A ai;
+    class G,H,Q,DONE,F2 human;
+    class F1,RE fallback;
+```
+
+**Ranh giới quyền hạn:** OpenAI chỉ xuất `[DRAFT_ONLY]`; validator không thể tự đặt dịch vụ; booking engine chỉ thực thi sau thao tác xác nhận rõ ràng của khách hoặc nhân viên có thẩm quyền.
 
 ### Fallback
 
