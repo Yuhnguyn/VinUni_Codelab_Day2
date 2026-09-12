@@ -6,7 +6,8 @@
 - **Branch cá nhân:** `lethithuytrang-02678`
 - **Vai trò giả định:** AI Product Engineer, Vin Smart Future
 - **Phạm vi:** Phase 1 — SCAN và Phase 2 — QUICK-ASSESS
-- **Quyết định sau thảo luận nhóm:** Chọn bài toán Vinhomes về chuẩn hóa và bàn giao phản ánh cư dân để tiếp tục Deep-Dive
+- **Đề tài cá nhân / Prompt Prototype:** Vinpearl Personalized Journey Copilot
+- **Đề tài nhóm sau thảo luận:** Vinhomes Resident Request Copilot
 
 > Đây là bài scan cá nhân dựa trên desk research. Các nguồn công khai xác nhận nghiệp vụ hoặc định hướng sản phẩm, không tự chứng minh doanh nghiệp đang vận hành kém. Những con số chưa có nguồn nội bộ được ghi rõ là **working baseline** hoặc **pilot target** và phải được kiểm chứng trước khi triển khai.
 
@@ -127,9 +128,11 @@ Prompt là công cụ hỗ trợ tư duy, không được dùng thay cho dữ li
 | Vinpearl | LLM có thể bịa availability; ba ý tưởng ban đầu thực chất là các tính năng của cùng planner | Giữ một card Journey Copilot; tách re-planning và family preference thành use case; bắt buộc catalog grounding, validator và confirmation gate |
 | Vinmec | Ranh giới giữa hỗ trợ hành chính và tư vấn y khoa dễ bị vượt qua | Thu hẹp về intake hành chính; nhân viên chọn chuyên khoa; thêm emergency escalation và privacy boundary |
 
-## 5. Lựa chọn bài toán để Deep-Dive
+## 5. Phân tách quyết định cá nhân và quyết định nhóm
 
-Sau khi nhóm thảo luận, chọn **P1 — Vinhomes Resident Request Copilot**.
+### 5.1. Lựa chọn cá nhân
+
+Tôi chọn **P2 — Vinpearl Personalized Journey Copilot** để tiếp tục làm AI Log và Prompt Prototype cá nhân. Đây là đề tài tôi đã nghiên cứu, xây product thesis và xác định kiến trúc Retrieval + Rules + LLM + Human Confirmation.
 
 | Tiêu chí | Vinhomes | Vinpearl | Vinmec |
 |---|---|---|---|
@@ -138,28 +141,27 @@ Sau khi nhóm thảo luận, chọn **P1 — Vinhomes Resident Request Copilot**
 | Giá trị tăng thêm của LLM so với rule | Cần chứng minh | Cao | Trung bình |
 | Rủi ro nếu AI sai | Trung bình | Trung bình | Cao |
 | HITL/fallback dễ thiết kế | Cao | Cao | Cao |
-| Phù hợp prototype ngắn trong lab | **Cao** | Trung bình | Trung bình |
+| Phù hợp prototype cá nhân | Cao | **Cao** | Trung bình |
 
-### Lý do chọn Vinhomes
+### Lý do cá nhân chọn Vinpearl
 
-- Actor, đầu vào và kết quả nghiệp vụ rõ.
-- Current workflow có handoff giữa cư dân, CSKH/BQL và bộ phận xử lý.
-- Có thể tạo dataset ẩn danh/synthetic và đánh giá routing khách quan.
-- Phân chia vai trò rule và LLM rõ ràng.
-- Có thể giới hạn AI ở chế độ draft/recommendation, bắt buộc nhân viên duyệt.
+- Phù hợp trực tiếp với định hướng All-in-One Destination và cá nhân hóa được Vinpearl công bố.
+- LLM có giá trị rõ trong việc hiểu preference tự nhiên và giải thích lịch trình.
+- Hard constraints có thể giao cho rule engine thay vì tin vào LLM.
+- Có thể xây prototype bằng catalog synthetic mà không sử dụng dữ liệu khách thật.
+- Boundary kiểm thử được: không bịa availability, không bỏ qua giới hạn an toàn và không tự thực hiện giao dịch.
 
-### Lý do chưa chọn hai cards còn lại
+### 5.2. Quyết định của nhóm
 
-- **Vinpearl:** Ý tưởng phù hợp chiến lược nhưng phụ thuộc catalog/API realtime và dữ liệu preference có consent. Giữ làm phương án phase sau.
-- **Vinmec:** Quy trình hành chính rõ nhưng dữ liệu sức khỏe nhạy cảm và nguy cơ bị hiểu thành tư vấn y tế làm tăng chi phí governance.
+Sau khi các thành viên trình bày và thảo luận, nhóm chọn **P1 — Vinhomes Resident Request Copilot** cho `02-deep-dive-report.md` và `04-workflow-diagram`. Quyết định nhóm không thay thế đề tài cá nhân của tôi; code và reflection trên branch cá nhân vẫn theo Vinpearl.
 
-## 6. Kế hoạch xác thực tiếp theo cho Vinhomes
+## 6. Kế hoạch xác thực đề tài cá nhân Vinpearl
 
-1. Phỏng vấn 5 cư dân, 2 nhân viên CSKH, 1 kỹ thuật và 1 quản lý vận hành.
-2. Quan sát 10 lượt xử lý thực tế; tách thời gian thao tác khỏi thời gian chờ.
-3. Đánh giá 50 phiếu đã ẩn danh để đo trường thiếu, số lần hỏi lại và routing đúng lần đầu.
-4. Xây form + rule baseline trước khi thử LLM.
-5. Chỉ tiếp tục nếu LLM giảm ít nhất 30% thời gian thao tác mà không làm giảm routing accuracy hoặc bỏ sót case khẩn cấp.
+1. Phỏng vấn 5 khách gia đình, 3 concierge/CX và 2 nhân sự vận hành dịch vụ tại một cụm điểm đến.
+2. Quan sát 10 lượt khách tự lập lịch; tách thời gian tìm kiếm, so sánh constraint và chỉnh lịch.
+3. Chuẩn bị catalog synthetic 30–50 dịch vụ với ID, giờ, vị trí, điều kiện tham gia và travel time.
+4. So sánh AI Journey Copilot với itinerary template + bộ lọc rule trên cùng 30 tình huống.
+5. Chỉ tiếp tục nếu item hợp lệ ≥90%, hard-constraint violation = 0 và edit/removal rate ≤35%.
 
 ## 7. Checklist đối chiếu yêu cầu
 
@@ -172,4 +174,4 @@ Sau khi nhóm thảo luận, chọn **P1 — Vinhomes Resident Request Copilot**
 - [x] Có Quick Architecture.
 - [x] Bổ sung data needs, baseline không-AI, HITL, fallback và operational boundary.
 - [x] Có prompt brainstorm, stress-test, phản biện và cách sửa.
-- [x] Ghi rõ quyết định nhóm chọn Vinhomes cho Deep-Dive.
+- [x] Ghi rõ Vinpearl là đề tài cá nhân và Vinhomes là đề tài nhóm.
